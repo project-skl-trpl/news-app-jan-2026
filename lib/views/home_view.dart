@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:news_app_trpl_c/controllers/news_controller.dart';
 import 'package:news_app_trpl_c/widgets/category_chip.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends GetView<NewsController> {
   const HomeView({super.key});
 
   @override
@@ -55,7 +56,26 @@ class HomeView extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: Center(child: Obx(() => Text(selectedCategory.value))),
+            child: Obx(() {
+              if (controller.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (controller.articles.isEmpty) {
+                return Center(
+                  child: Text("Belum ada data ${controller.error}"),
+                );
+              }
+              return ListView.builder(
+                itemCount: controller.articles.length,
+                itemBuilder: (context, index) {
+                  final article = controller.articles[index];
+                  return ListTile(
+                    title: Text(article.title ?? 'No Title'),
+                    subtitle: Text(article.description ?? 'No Description'),
+                  );
+                },
+              );
+            }),
           ),
         ],
       ),
