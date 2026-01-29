@@ -41,4 +41,9 @@ class NewsController extends GetxController {
       _isLoading.value = false;
     }
   }
+
+  void selectCategory(String category) {
+    _selectedCategory.value = category;
+    fetchTopHeadlines(category: category);
+  }
 }

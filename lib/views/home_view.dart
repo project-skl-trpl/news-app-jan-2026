@@ -8,24 +8,18 @@ class HomeView extends GetView<NewsController> {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> categories = [
-      'All',
-      'Business',
-      'Entertainment',
-      'General',
-      'Health',
-      'Science',
-      'Sports',
-      'Technology',
-    ];
-
-    final RxString selectedCategory = 'All'.obs;
-
     return Scaffold(
       appBar: AppBar(
         title: Text('News App'),
         centerTitle: true,
-        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.search))],
+        actions: [
+          IconButton(
+            onPressed: () {
+              controller.fetchTopHeadlines();
+            },
+            icon: Icon(Icons.refresh),
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -38,17 +32,15 @@ class HomeView extends GetView<NewsController> {
                 horizontal: 16.0,
                 vertical: 8.0,
               ),
-              itemCount: categories.length,
+              itemCount: controller.categories.length,
               itemBuilder: (context, index) {
-                final category = categories[index];
+                final category = controller.categories[index];
                 return Obx(
                   () => CategoryChip(
-                    label: category,
-                    isSelected: category == selectedCategory.value,
+                    label: category.capitalize ?? 'No Category',
+                    isSelected: controller.selectedCategory == category,
                     onTap: () {
-                      selectedCategory.value = category;
-                      // ignore: avoid_print
-                      print(selectedCategory.value);
+                      controller.selectCategory(category);
                     },
                   ),
                 );
