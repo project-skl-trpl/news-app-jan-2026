@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:news_app_trpl_c/controllers/news_controller.dart';
+import 'package:news_app_trpl_c/routes/app_pages.dart';
 import 'package:news_app_trpl_c/widgets/category_chip.dart';
+import 'package:news_app_trpl_c/widgets/loading_shimmer.dart';
+import 'package:news_app_trpl_c/widgets/news_card.dart';
 
 class HomeView extends GetView<NewsController> {
   const HomeView({super.key});
@@ -50,7 +53,8 @@ class HomeView extends GetView<NewsController> {
           Expanded(
             child: Obx(() {
               if (controller.isLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return LoadingShimmer();
+                // return const Center(child: CircularProgressIndicator());
               }
               if (controller.articles.isEmpty) {
                 return Center(
@@ -61,9 +65,16 @@ class HomeView extends GetView<NewsController> {
                 itemCount: controller.articles.length,
                 itemBuilder: (context, index) {
                   final article = controller.articles[index];
-                  return ListTile(
-                    title: Text(article.title ?? 'No Title'),
-                    subtitle: Text(article.description ?? 'No Description'),
+                  return NewsCard(
+                    article: article,
+                    onTap: () {
+                      Get.toNamed(Routes.NEWS_DETAIL, arguments: article);
+                      // Get.snackbar(
+                      //   "Detail Berita",
+                      //   article.title ?? "",
+                      //   snackPosition: SnackPosition.BOTTOM,
+                      // );
+                    },
                   );
                 },
               );
