@@ -18,9 +18,9 @@ class HomeView extends GetView<NewsController> {
         actions: [
           IconButton(
             onPressed: () {
-              controller.fetchTopHeadlines();
+              _showSearchDialog(context);
             },
-            icon: Icon(Icons.refresh),
+            icon: Icon(Icons.search_outlined),
           ),
         ],
       ),
@@ -61,27 +61,70 @@ class HomeView extends GetView<NewsController> {
                   child: Text("Belum ada data ${controller.error}"),
                 );
               }
-              return ListView.builder(
-                itemCount: controller.articles.length,
-                itemBuilder: (context, index) {
-                  final article = controller.articles[index];
-                  return NewsCard(
-                    article: article,
-                    onTap: () {
-                      Get.toNamed(Routes.NEWS_DETAIL, arguments: article);
-                      // Get.snackbar(
-                      //   "Detail Berita",
-                      //   article.title ?? "",
-                      //   snackPosition: SnackPosition.BOTTOM,
-                      // );
-                    },
-                  );
-                },
+              return RefreshIndicator(
+                onRefresh: controller.refreshNews,
+                child: ListView.builder(
+                  itemCount: controller.articles.length,
+                  itemBuilder: (context, index) {
+                    final article = controller.articles[index];
+                    return NewsCard(
+                      article: article,
+                      onTap: () {
+                        Get.toNamed(Routes.NEWS_DETAIL, arguments: article);
+                        // Get.snackbar(
+                        //   "Detail Berita",
+                        //   article.title ?? "",
+                        //   snackPosition: SnackPosition.BOTTOM,
+                        // );
+                      },
+                    );
+                  },
+                ),
               );
             }),
           ),
         ],
       ),
+    );
+  }
+
+  void _showSearchDialog(BuildContext context) {
+    final TextEditingController searchController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text('Search News'),
+            content: TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: 'Enter search term...',
+                border: OutlineInputBorder(),
+              ),
+              onSubmitted: (value) {
+                if (value.isNotEmpty) {
+                  controller.searchNews(value);
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  if (searchController.text.isNotEmpty) {
+                    controller.searchNews(searchController.text);
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: Text('Search'),
+              ),
+            ],
+          ),
     );
   }
 }
